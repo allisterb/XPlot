@@ -42,15 +42,13 @@ module Html =
         let file = sprintf "%s.html" pageId
         let path = Path.Combine(tempPath, file)
         File.WriteAllText(path, html)
-        if RuntimeInformation.IsOSPlatform(OSPlatform.Windows) then
+        if Environment.OSVersion.Platform = PlatformID.Win32NT then
             let psi = new System.Diagnostics.ProcessStartInfo(FileName = path, UseShellExecute = true)
             System.Diagnostics.Process.Start(psi) |> ignore
-        elif RuntimeInformation.IsOSPlatform(OSPlatform.Linux) then
-            System.Diagnostics.Process.Start("xdg-open", path) |> ignore
-        elif RuntimeInformation.IsOSPlatform(OSPlatform.OSX) then
-            System.Diagnostics.Process.Start("open", path) |> ignore
-        else
-            invalidOp "Not supported OS platform"        
+        else if Environment.OSVersion.Platform = PlatformID.Unix then
+                System.Diagnostics.Process.Start("xdg-open", path) |> ignore
+        else if Environment.OSVersion.Platform = PlatformID.MacOSX then System.Diagnostics.Process.Start("open", path) |> ignore
+        else invalidOp "Not supported OS platform"        
 
 type Options = Layout
 
